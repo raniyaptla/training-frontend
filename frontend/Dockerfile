@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:18-alpine
 
 # Set environment variables
 ENV NODE_ENV=development
@@ -11,13 +11,19 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
 # Copy the rest of the application files
 COPY . .
 
+# Build the application
+RUN npm run build
+
+# Install a static file server
+RUN npm install -g serve
+
 # Expose the port the app runs on
-EXPOSE 8000
+EXPOSE 5173
 
 # Command to run the application
-CMD ["npm", "run", "dev"]
+CMD ["serve", "-s", "dist", "-l", "5173"]
